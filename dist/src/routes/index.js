@@ -23,7 +23,7 @@ router.post("/add", async (req, res) => {
         const existingUser = await User_1.User.findOne({ name: req.body.name });
         //return res.status(403)
         if (existingUser) {
-            //return res.status(403).json({message: "User already existed"})
+            return res.status(403).json({ message: "User already existed" });
         }
         const { name, todo } = req.body;
         const user = new User_1.User({

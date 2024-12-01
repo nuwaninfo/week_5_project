@@ -32,7 +32,7 @@ router.post("/add", async (req: Request, res: Response) => {
       const existingUser: IUser | null = await User.findOne({name: req.body.name})
       //return res.status(403)
       if (existingUser) {
-          //return res.status(403).json({message: "User already existed"})
+          return res.status(403).json({message: "User already existed"})
       }
       const { name, todo }: { name: string; todo: ITodo } = req.body;
       const user: IUser = new User({
