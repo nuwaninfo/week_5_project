@@ -36,7 +36,7 @@ router.post("/add", async (req: Request, res: Response) => {
       }
       const { name, todo }: { name: string; todo: ITodo } = req.body;
       const user: IUser = new User({
-        name: "Test User",
+        name: name,
         todos: [{ todo: todo }], // Directly embed the todo
       });
       /*const testTodo: ITodo = {
