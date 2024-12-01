@@ -5,42 +5,35 @@ const User_1 = require("../models/User");
 const router = (0, express_1.Router)();
 let userArr = [];
 let message;
-/*router.get("/add",async (req: Request, res: Response) => {
-  try {
-      const poems: IPoem[] | null = await Poem.find()
-      if (!poems) {
-          return res.status(404).json({message: "No poems found"})
-      }
-      return res.json(poems)
-  } catch (error: any) {
-      console.log(`Error while fetching poems: ${error}`)
-      return res.status(500).json({message: "Internal server error"})
-  }
-})*/
 router.post("/add", async (req, res) => {
     try {
-        console.log(req.body);
-        const existingUser = await User_1.User.findOne({ name: req.body.name });
-        //return res.status(403)
-        if (existingUser) {
-            return res.status(403).json({ message: "User already existed" });
-        }
+        //const existingUser: IUser | null = await User.findOne({name: req.body.name})
         const { name, todo } = req.body;
-        const user = new User_1.User({
-            name: name,
-            todos: [{ todo: todo }], // Directly embed the todo
-        });
-        /*const testTodo: ITodo = {
-          todo: "testtodo",
-        } as ITodo;*/
         /*const user: IUser = new User({
-            name: req.body.name,
-            todos: req.body.todo,
-        })*/
-        console.log(`req.body: ${req.body.todo}`);
-        console.log(`user: ${user}`);
+          name: name,
+          todos: [{ todo: todo }]
+        });
+  
+        if (existingUser) {
+            //return res.status(403).json({message: "User already existed"})
+            console.log("existing user")
+            user.todos.push( todo  );
+        }
+        */
+        // Check if the user already exists
+        let user = await User_1.User.findOne({ name });
+        if (user) {
+            //user.todos.push({ todo } as ITodo); // Push a new todo
+        }
+        else {
+            // Create a new user with the provided todo
+            user = new User_1.User({
+                name,
+                todos: [{ todo }],
+            });
+        }
         await user.save();
-        //return res.status(201).json({message: "Data saved successfully"})
+        return res.status(201).json({ message: "Data saved successfully" });
     }
     catch (error) {
         console.error(`Error while saving poem: ${error}`);
@@ -48,31 +41,30 @@ router.post("/add", async (req, res) => {
     }
 }); // End add()
 //  Fetch users and their todos based on their name
-/*router.get("/todos/:id", async (req: Request, res: Response) => {
-  const { id }   = req.params
-
-  try {
-    const data = await fs.readFile(TODO_FILE, "utf8");
-    const userArr: TUser[] = JSON.parse(data);
-    
-   
-    const user: TUser | undefined  = userArr.find((u) => u.name === id);
-    console.log('tyep of user: ', typeof user)
-
-    if (typeof user === "undefined") {
-      //message = `User with name ${id} not found.`
-      message = "User not found";
-      res.json({message: message, data: ''})
-    } else {
-      message = 'User found'
-      res.json({message: message, data: user});
+router.get("/todos/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User_1.User.findOne({ name: id }).populate("todos");
+        console.log(user);
+        if (!user) {
+            return res.status(404).json({ message: `User with name ${id} not found.` });
+        }
+        user.todos.forEach((element) => console.log(element));
+        const arrTodos = user.todos.map((x) => x.todo);
+        return res.status(200).json({
+            message: "User found",
+            data: {
+                name: user.name,
+                todos: arrTodos,
+            },
+        });
     }
-  } catch (err: any) {
-    console.error("Error fetching user:", err);
-  }
+    catch (err) {
+        console.error("Error fetching user:", err);
+    }
 });
 // End Fetch users
-
+/*
 // Delete route
 router.delete("/delete", async (req: Request, res: Response) => {
  
