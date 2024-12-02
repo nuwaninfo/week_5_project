@@ -79,40 +79,32 @@ router.delete("/delete", async (req: Request, res: Response) => {
   }
  
 })
-
-// update todos (delete todos)
-
-router.put("/update", async (req: Request, res: Response) => {
-  const { name, todo } = req.body;
-
-  let todoDelete : boolean = false
-
-  try {
-    const data = await fs.readFile(TODO_FILE, "utf8");
-    const userArr: TUser[] = JSON.parse(data);
-
-    const userIndex = userArr.findIndex((user) => user.name === name);
-    if (userIndex === -1) {
-      message = "User not found"
-      res.json({message: message});
-      process.exit(0);
-    }
-
-    const todoIndex = userArr[userIndex].todos.indexOf(todo);
-    if (todoIndex === -1) {
-      message = "Todo not found"
-      res.json({message: message});
-      process.exit(0);
-    }
-    userArr[userIndex].todos.splice(todoIndex, 1);
-
-    await fs.writeFile(TODO_FILE, JSON.stringify(userArr, null, 2));
-    message = "Todo deleted successfully."
-    todoDelete = true
-    res.json({message: message, todoDelete: todoDelete});
-  } catch (err) {
-    console.error("Error updating todo:", err);
-  }
-});
 */
+// update todos (delete todos)
+router.put("/update", async (req, res) => {
+    const { name, todo } = req.body;
+    let todoDelete = false;
+    try {
+        const user = await User_1.User.findOne({ name: name });
+        if (!user) {
+            message = "User not found";
+            res.json({ message: message });
+            process.exit(0);
+        }
+        const todoIndex = user.todos.findIndex((item) => item.todo === todo);
+        if (todoIndex === -1) {
+            message = "Todo not found";
+            res.json({ message: message });
+            process.exit(0);
+        }
+        user.todos.splice(todoIndex, 1);
+        await user.save();
+        message = "Todo deleted successfully.";
+        todoDelete = true;
+        res.json({ message: message, todoDelete: todoDelete });
+    }
+    catch (err) {
+        console.error("Error updating todo:", err);
+    }
+});
 exports.default = router;

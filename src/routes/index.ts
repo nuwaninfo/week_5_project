@@ -99,7 +99,7 @@ router.delete("/delete", async (req: Request, res: Response) => {
   }
  
 })
-
+*/
 // update todos (delete todos)
 
 router.put("/update", async (req: Request, res: Response) => {
@@ -108,25 +108,26 @@ router.put("/update", async (req: Request, res: Response) => {
   let todoDelete : boolean = false
 
   try {
-    const data = await fs.readFile(TODO_FILE, "utf8");
-    const userArr: TUser[] = JSON.parse(data);
-
-    const userIndex = userArr.findIndex((user) => user.name === name);
-    if (userIndex === -1) {
+   
+    const user:IUser | null = await User.findOne({ name: name });
+    
+    if (!user) {
       message = "User not found"
-      res.json({message: message});
+      res.json({message: message})
       process.exit(0);
     }
 
-    const todoIndex = userArr[userIndex].todos.indexOf(todo);
+    const todoIndex = user.todos.findIndex((item:ITodo) => item.todo === todo)
+
     if (todoIndex === -1) {
       message = "Todo not found"
       res.json({message: message});
       process.exit(0);
     }
-    userArr[userIndex].todos.splice(todoIndex, 1);
+    user.todos.splice(todoIndex, 1);
 
-    await fs.writeFile(TODO_FILE, JSON.stringify(userArr, null, 2));
+    await user.save();
+
     message = "Todo deleted successfully."
     todoDelete = true
     res.json({message: message, todoDelete: todoDelete});
@@ -134,5 +135,5 @@ router.put("/update", async (req: Request, res: Response) => {
     console.error("Error updating todo:", err);
   }
 });
-*/
+
 export default router;
