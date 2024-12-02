@@ -3,6 +3,7 @@ import mongoose, { Document, Schema , Model } from 'mongoose'
 
 interface ITodo extends Document {
     todo: string
+    checked: boolean
 }
 
 interface IUser extends Document {
@@ -13,6 +14,7 @@ interface IUser extends Document {
 
 const TodoSchema: Schema = new Schema<ITodo>({
     todo: { type: String, required: true },
+    checked: { type: Boolean, default: false }
 });
   
 const UserSchema: Schema = new Schema<IUser>({

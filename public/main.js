@@ -52,13 +52,40 @@ searchButton.addEventListener("click", async function() {
     if (todosJson.data && todosJson.data.todos) {
     todosJson.data.todos.forEach(todo => {
         const li = document.createElement("li");
-        const a = document.createElement("a");
+        
 
-        a.textContent = todo;
-        a.href = "#";
-        a.className = "delete-task";
+        // Add check boxes
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = "myCheckbox";
+        checkbox.className = "checkBoxes";
+        checkbox.checked = todo.checked;
 
-        li.appendChild(a); 
+        checkbox.addEventListener("change", async function () {
+          const checked = this.checked;
+
+          const updateResponse = await fetch("http://localhost:3000/updateTodo", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, todo: todo.todo, checked }),
+          });
+
+          const updateMessage = await updateResponse.json();
+          showTodosDelMsg.innerText = updateMessage.message;
+      });
+
+      li.appendChild(checkbox);
+      li.appendChild(document.createTextNode(todo.todo));
+
+      // Add anchor tags
+      const a = document.createElement("a");
+
+      a.textContent = todo;
+      a.href = "#";
+      a.className = "delete-task";
+
+      li.appendChild(a);
+
         ul.appendChild(li);  
         
         

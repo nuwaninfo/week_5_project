@@ -107,4 +107,24 @@ router.put("/update", async (req, res) => {
         console.error("Error updating todo:", err);
     }
 });
+router.put("/updateTodo", async (req, res) => {
+    const { name, todo, checked } = req.body;
+    try {
+        const user = await User_1.User.findOne({ name });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        const todoItem = user.todos.find((item) => item.todo === todo);
+        if (!todoItem) {
+            return res.status(404).json({ message: "Todo not found" });
+        }
+        todoItem.checked = checked;
+        await user.save();
+        res.status(200).json({ message: "Todo updated successfully." });
+    }
+    catch (error) {
+        console.error("Error updating todo:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+});
 exports.default = router;

@@ -37,6 +37,7 @@ exports.User = exports.Todo = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const TodoSchema = new mongoose_1.Schema({
     todo: { type: String, required: true },
+    checked: { type: Boolean, default: false }
 });
 const UserSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
