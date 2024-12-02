@@ -63,11 +63,12 @@ searchButton.addEventListener("click", async function() {
 
         checkbox.addEventListener("change", async function () {
           const checked = this.checked;
+          console.log(todo)
 
           const updateResponse = await fetch("http://localhost:3000/updateTodo", {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name, todo: todo.todo, checked }),
+              body: JSON.stringify({ name, todo: todo, checked }),
           });
 
           const updateMessage = await updateResponse.json();
