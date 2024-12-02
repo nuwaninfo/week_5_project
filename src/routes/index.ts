@@ -17,23 +17,13 @@ router.post("/add", async (req: Request, res: Response) => {
   try {
    
       //const existingUser: IUser | null = await User.findOne({name: req.body.name})
-      const { name, todo }: { name: string; todo: ITodo } = req.body;
+      const { name, todo }: { name: string; todo: string } = req.body;
+      const newTodo = {todo} as ITodo
 
-      /*const user: IUser = new User({
-        name: name,
-        todos: [{ todo: todo }]
-      });
-
-      if (existingUser) {
-          //return res.status(403).json({message: "User already existed"})
-          console.log("existing user")
-          user.todos.push( todo  );
-      }
-      */
       // Check if the user already exists
     let user: IUser | null = await User.findOne({ name });
     if (user) {
-      //user.todos.push({ todo } as ITodo); // Push a new todo
+      user.todos.push(newTodo); // Push a new todo
     } else {
       // Create a new user with the provided todo
       user = new User({
